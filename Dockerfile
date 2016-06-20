@@ -6,3 +6,4 @@ RUN git clone -b 6.x git://github.com/TrinityCore/TrinityCore.git /opt/TrinityCo
 RUN cd /opt/TrinityCore/build && cmake ../sources -DTOOLS=1  -DCMAKE_INSTALL_PREFIX=/opt/TrinityCore -DCONF_DIR=/opt/TrinityCore/etc
 RUN cd /opt/TrinityCore/build && make -j$(nproc)
 RUN cd /opt/TrinityCore/build && make -j$(nproc) install
+RUN cd /opt/TrinityCore/build && make -j$(nproc) clean
