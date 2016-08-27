@@ -1,0 +1,42 @@
+version: '2'
+services:
+    trinitycore:
+        build: .
+        volumes:
+           - ./log:/opt/trinitycore/log
+        restart: always
+        working_dir: /opt/trinitycore/bin
+        command: bash /scripts/infiniteLoop.sh
+    bnetserver:
+        extends: trinitycore
+        links:
+           - db
+        volumes:
+           - ./etc/bnetserver.conf:/opt/trinitycore/etc/bnetserver.conf
+        ports:
+           - "1119:1119" 
+           - "8081:8081" 
+        command: ./bnetserver
+
+    worldserver:
+        extends: trinitycore
+        links:
+           - db
+        volumes:
+#          mount Wow installation to /opt/trinitycore/data in docker-compose.override.yml
+           - ./etc/worldserver.conf:/opt/trinitycore/etc/worldserver.conf
+        ports:
+           - "8085:8085" 
+           - "8086:8086" 
+        command: ./worldserver
+
+    db:
+        image: mysql
+        restart: always
+        volumes:
+           - ./mount/mysql:/var/lib/mysql
+           - ./mount/initdb:/docker-entrypoint-initdb.d
+        expose:
+           - "3306"
+        environment:
+           - MYSQL_ALLOW_EMPTY_PASSWORD=1
