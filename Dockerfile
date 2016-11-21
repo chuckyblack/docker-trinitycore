@@ -6,15 +6,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends mysql-client gi
 RUN mkdir -p /opt/trinitycore/build
 
 # compile sources
-RUN git clone -b 6.x git://github.com/TrinityCore/TrinityCore.git /opt/trinitycore/sources
+RUN git clone -b master git://github.com/TrinityCore/TrinityCore.git /opt/trinitycore/sources
 WORKDIR /opt/trinitycore/build
 RUN cmake ../sources -DTOOLS=1 -DWITH_DYNAMIC_LINKING=ON -DSCRIPTS=dynamic -DUSE_COREPCH=1 -DUSE_SCRIPTPCH=1 -DCMAKE_INSTALL_PREFIX=/opt/trinitycore -DCONF_DIR=/opt/trinitycore/etc
 RUN make -j$(nproc)
 RUN make -j$(nproc) install
 
-# configuration
 WORKDIR /opt/trinitycore
-RUN sed -e 's/DataDir = "."/DataDir = "..\/data"/g; s/LogsDir = ""/LogsDir = "..\/log"/g; s/\(Login\|World\|Character\|Hotfix\)DatabaseInfo\([ ]*\)= "[^;]*\(.*\)"/\1DatabaseInfo\2= "db\3"/g' etc/worldserver.conf.dist > etc/worldserver.conf
-RUN sed -e 's/LogsDir = ""/LogsDir = "..\/log"/g; s/LoginDatabaseInfo\([ ]*\)= "[^;]*\(.*\)"/LoginDatabaseInfo\1= "db\2"/g' etc/bnetserver.conf.dist > etc/bnetserver.conf
 
 ADD scripts /scripts
